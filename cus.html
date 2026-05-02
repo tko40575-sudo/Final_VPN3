@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VVIP - YLT | Client Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- QR Code Generator Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -30,11 +29,9 @@
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #3730a3; border-radius: 10px; }
 
-        /* QR Code Styling */
         .qr-wrapper { background: white; padding: 8px; border-radius: 12px; display: inline-block; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
         .qr-wrapper img { margin: 0 auto; border-radius: 8px; }
 
-        /* Startup Loading Animation */
         #startup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #050505; z-index: 50;
@@ -44,7 +41,6 @@
         .loader-ring { width: 80px; height: 80px; border-radius: 50%; border: 3px solid transparent; border-top-color: #6366f1; border-right-color: #22d3ee; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Staggered Animations */
         .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
         .delay-100 { animation-delay: 0.1s; }
         .delay-200 { animation-delay: 0.2s; }
@@ -85,7 +81,6 @@
         <!-- ================= DASHBOARD SECTION (READ ONLY) ================= -->
         <div id="dashboard-section" class="hidden space-y-6">
             
-            <!-- Header (NO EDIT BUTTON HERE) -->
             <div class="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 relative overflow-hidden fade-in-up">
                 <div class="absolute -right-20 -top-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl"></div>
                 
@@ -104,7 +99,6 @@
                 </button>
             </div>
 
-            <!-- Stats & Keys Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <!-- Outline Card -->
@@ -126,7 +120,6 @@
                     </div>
                     
                     <div class="flex-1 space-y-4 relative z-10 flex flex-col justify-between">
-                        <!-- Usage with Progress Bar -->
                         <div class="bg-black/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden">
                             <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest flex justify-between">
                                 <span>Data Usage</span>
@@ -150,13 +143,12 @@
                         <div class="bg-indigo-900/20 p-4 rounded-2xl border border-indigo-500/30 flex items-center justify-between mt-auto">
                             <div class="flex-1 mr-4">
                                 <p class="text-xs text-indigo-300 mb-2 font-bold uppercase tracking-widest">Access Key</p>
-                                <!-- Readonly input -->
-                                <input type="password" id="out-key-hidden" class="w-full bg-black/50 border border-indigo-500/50 rounded-lg px-2 py-2 text-xs text-indigo-100 mb-3" readonly value="Loading...">
+                                <!-- Password အစား Text ဖြစ်သွားပါပြီ -->
+                                <input type="text" id="out-key-hidden" class="w-full bg-black/50 border border-indigo-500/50 rounded-lg px-3 py-2 text-xs text-indigo-100 mb-3" readonly value="Loading...">
                                 <button onclick="copyKey('out-key-hidden')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(99,102,241,0.6)] flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-copy"></i> COPY KEY
                                 </button>
                             </div>
-                            <!-- QR Code will generate here -->
                             <div id="out-qr" class="qr-wrapper"></div>
                         </div>
                     </div>
@@ -181,7 +173,6 @@
                     </div>
                     
                     <div class="flex-1 space-y-4 relative z-10 flex flex-col justify-between">
-                        <!-- Usage with Progress Bar -->
                         <div class="bg-black/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden">
                             <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest flex justify-between">
                                 <span>Data Usage</span>
@@ -205,13 +196,12 @@
                         <div class="bg-cyan-900/20 p-4 rounded-2xl border border-cyan-500/30 flex items-center justify-between mt-auto">
                             <div class="flex-1 mr-4">
                                 <p class="text-xs text-cyan-300 mb-2 font-bold uppercase tracking-widest">Server Link</p>
-                                <!-- Readonly input -->
-                                <input type="password" id="vless-key-hidden" class="w-full bg-black/50 border border-cyan-500/50 rounded-lg px-2 py-2 text-xs text-cyan-100 mb-3" readonly value="Loading...">
+                                <!-- Password အစား Text ဖြစ်သွားပါပြီ -->
+                                <input type="text" id="vless-key-hidden" class="w-full bg-black/50 border border-cyan-500/50 rounded-lg px-3 py-2 text-xs text-cyan-100 mb-3" readonly value="Loading...">
                                 <button onclick="copyKey('vless-key-hidden')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(34,211,238,0.6)] flex items-center justify-center gap-2">
                                     <i class="fa-solid fa-copy"></i> COPY LINK
                                 </button>
                             </div>
-                            <!-- QR Code will generate here -->
                             <div id="vless-qr" class="qr-wrapper"></div>
                         </div>
                     </div>
@@ -271,18 +261,15 @@
             }, 300); 
         }
 
-        // ================= COPY FUNCTION =================
+        // ================= COPY FUNCTION (UPDATED) =================
         window.copyKey = function(elementId) {
             const inputElement = document.getElementById(elementId);
             
-            // Temporary change type to text to allow copying on mobile devices easily
-            inputElement.type = 'text';
             inputElement.select();
             inputElement.setSelectionRange(0, 99999); 
             
             const valueToCopy = inputElement.value;
-            if(!valueToCopy || valueToCopy.includes("No Key") || valueToCopy.includes("Loading")) {
-                inputElement.type = 'password';
+            if(!valueToCopy || valueToCopy.includes("No Key") || valueToCopy.includes("Loading") || valueToCopy.includes("No Link Assigned")) {
                 return alert("⚠️ There is no valid key to copy. Please contact Admin.");
             }
 
@@ -300,12 +287,9 @@
                     btn.className = originalClass;
                 }, 2000);
                 
-                // Hide it back
-                inputElement.type = 'password'; 
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 alert("Failed to copy automatically.");
-                inputElement.type = 'password';
             });
         };
 
