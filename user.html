@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VVIP - YLT | Client Portal</title>
+    <title>VVIP - YLT | Premium Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QR Code Generator Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -23,6 +23,7 @@
             backdrop-filter: blur(20px); 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
+        .glow-text { text-shadow: 0 0 20px rgba(99, 102, 241, 0.6); }
         .data-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .data-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7); }
         
@@ -68,7 +69,7 @@
                 <i class="fa-solid fa-bolt text-3xl text-white relative z-10"></i>
             </div>
             <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-300 mb-2 tracking-tight">VVIP - YLT</h1>
-            <p class="text-gray-400 mb-8 text-sm uppercase tracking-widest">Client Portal</p>
+            <p class="text-gray-400 mb-8 text-sm uppercase tracking-widest">Premium Dashboard</p>
             
             <div class="relative mb-6">
                 <i class="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
@@ -82,20 +83,34 @@
             <p id="login-error" class="text-red-400 mt-4 text-sm hidden bg-red-500/10 py-2 rounded-lg border border-red-500/20"></p>
         </div>
 
-        <!-- ================= DASHBOARD SECTION (READ ONLY) ================= -->
+        <!-- ================= DASHBOARD SECTION ================= -->
         <div id="dashboard-section" class="hidden space-y-6">
             
-            <!-- Header (NO EDIT BUTTON HERE) -->
+            <!-- Header & Profile Edit -->
             <div class="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 relative overflow-hidden fade-in-up">
                 <div class="absolute -right-20 -top-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl"></div>
                 
                 <div class="flex items-center gap-4 z-10 w-full md:w-auto">
                     <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)] border-2 border-white/10">
-                        <i class="fa-solid fa-user text-xl text-white"></i>
+                        <i class="fa-solid fa-user-astronaut text-xl text-white"></i>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Premium Client</p>
-                        <h2 id="display-name" class="text-2xl font-bold text-white text-shadow-sm">User</h2>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Welcome back,</p>
+                        
+                        <!-- Name Display & Edit Toggle -->
+                        <div class="flex items-center gap-2 cursor-pointer group" id="name-display-container">
+                            <h2 id="display-name" class="text-2xl font-bold text-white glow-text">User</h2>
+                            <button id="btn-edit-trigger" class="text-gray-500 hover:text-indigo-400 transition-colors ml-1 w-6 h-6 flex items-center justify-center rounded bg-white/5 group-hover:bg-indigo-500/20">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- Name Edit Input -->
+                        <div id="name-edit-container" class="hidden flex items-center gap-2 mt-1">
+                            <input type="text" id="new-name-input" class="bg-black/50 border border-indigo-500/50 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-indigo-400 w-36 shadow-inner">
+                            <button id="btn-save-name" class="bg-indigo-600 hover:bg-indigo-500 text-white p-1.5 rounded-lg transition-all shadow-lg"><i class="fa-solid fa-check w-4"></i></button>
+                            <button id="btn-cancel-name" class="bg-gray-700 hover:bg-gray-600 text-white p-1.5 rounded-lg transition-all"><i class="fa-solid fa-xmark w-4"></i></button>
+                        </div>
                     </div>
                 </div>
 
@@ -104,7 +119,7 @@
                 </button>
             </div>
 
-            <!-- Stats & Keys Grid -->
+            <!-- Stats Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <!-- Outline Card -->
@@ -112,12 +127,13 @@
                     <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
                     
+                    <!-- Title -->
                     <div class="flex justify-between items-center mb-6 relative z-10">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
                                 <i class="fa-solid fa-shield-halved"></i>
                             </div>
-                            <h3 class="font-bold text-gray-200 tracking-wide">Outline Access</h3>
+                            <h3 class="font-bold text-gray-200 tracking-wide">Outline Config</h3>
                         </div>
                         <span class="flex h-3 w-3 relative">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
@@ -133,9 +149,10 @@
                                 <span id="out-percent-text" class="text-indigo-400 font-bold">0%</span>
                             </p>
                             <div class="flex items-end gap-2 mb-3">
-                                <p class="text-3xl font-extrabold text-white" style="text-shadow: 0 0 20px rgba(99,102,241,0.6);" id="out-used-show">0</p>
+                                <p class="text-3xl font-extrabold text-white glow-text" id="out-used-show">0</p>
                                 <p class="text-sm text-gray-500 font-medium mb-1">/ <span id="out-total-show">0</span> GB</p>
                             </div>
+                            <!-- Progress Bar -->
                             <div class="w-full bg-gray-800 rounded-full h-1.5 border border-gray-700/50">
                                 <div id="out-progress" class="bg-gradient-to-r from-indigo-600 to-cyan-400 h-1.5 rounded-full progress-bar shadow-[0_0_10px_rgba(99,102,241,0.8)]" style="width: 0%"></div>
                             </div>
@@ -149,14 +166,10 @@
                         <!-- Copy & QR Section -->
                         <div class="bg-indigo-900/20 p-4 rounded-2xl border border-indigo-500/30 flex items-center justify-between mt-auto">
                             <div class="flex-1 mr-4">
-                                <p class="text-xs text-indigo-300 mb-2 font-bold uppercase tracking-widest">Access Key</p>
-                                <!-- Readonly input -->
-                                <input type="password" id="out-key-hidden" class="w-full bg-black/50 border border-indigo-500/50 rounded-lg px-2 py-2 text-xs text-indigo-100 mb-3" readonly value="Loading...">
-                                <button onclick="copyKey('out-key-hidden')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(99,102,241,0.6)] flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-copy"></i> COPY KEY
-                                </button>
+                                <p class="text-xs text-indigo-300 mb-2">Access Key (ss://)</p>
+                                <input type="password" id="out-key-hidden" class="w-full bg-black/50 border border-indigo-500/50 rounded-lg px-2 py-1 text-xs text-indigo-100" readonly value="Loading...">
+                                <button onclick="copyKey('out-key-hidden')" class="mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-md"><i class="fa-solid fa-copy mr-1"></i> COPY KEY</button>
                             </div>
-                            <!-- QR Code will generate here -->
                             <div id="out-qr" class="qr-wrapper"></div>
                         </div>
                     </div>
@@ -167,12 +180,13 @@
                     <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
                     
+                    <!-- Title -->
                     <div class="flex justify-between items-center mb-6 relative z-10">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                                 <i class="fa-solid fa-network-wired"></i>
                             </div>
-                            <h3 class="font-bold text-gray-200 tracking-wide">VLESS (VMess) Access</h3>
+                            <h3 class="font-bold text-gray-200 tracking-wide">VLESS (VMess) Config</h3>
                         </div>
                         <span class="flex h-3 w-3 relative">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -191,6 +205,7 @@
                                 <p class="text-3xl font-extrabold text-white" style="text-shadow: 0 0 20px rgba(34,211,238,0.6);" id="vless-used-show">0</p>
                                 <p class="text-sm text-gray-500 font-medium mb-1">/ <span id="vless-total-show">0</span> GB</p>
                             </div>
+                            <!-- Progress Bar -->
                             <div class="w-full bg-gray-800 rounded-full h-1.5 border border-gray-700/50">
                                 <div id="vless-progress" class="bg-gradient-to-r from-cyan-500 to-teal-400 h-1.5 rounded-full progress-bar shadow-[0_0_10px_rgba(34,211,238,0.8)]" style="width: 0%"></div>
                             </div>
@@ -204,14 +219,10 @@
                         <!-- Copy & QR Section -->
                         <div class="bg-cyan-900/20 p-4 rounded-2xl border border-cyan-500/30 flex items-center justify-between mt-auto">
                             <div class="flex-1 mr-4">
-                                <p class="text-xs text-cyan-300 mb-2 font-bold uppercase tracking-widest">Server Link</p>
-                                <!-- Readonly input -->
-                                <input type="password" id="vless-key-hidden" class="w-full bg-black/50 border border-cyan-500/50 rounded-lg px-2 py-2 text-xs text-cyan-100 mb-3" readonly value="Loading...">
-                                <button onclick="copyKey('vless-key-hidden')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(34,211,238,0.6)] flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-copy"></i> COPY LINK
-                                </button>
+                                <p class="text-xs text-cyan-300 mb-2">VLESS Link (vless://)</p>
+                                <input type="password" id="vless-key-hidden" class="w-full bg-black/50 border border-cyan-500/50 rounded-lg px-2 py-1 text-xs text-cyan-100" readonly value="Loading...">
+                                <button onclick="copyKey('vless-key-hidden')" class="mt-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-md"><i class="fa-solid fa-copy mr-1"></i> COPY LINK</button>
                             </div>
-                            <!-- QR Code will generate here -->
                             <div id="vless-qr" class="qr-wrapper"></div>
                         </div>
                     </div>
@@ -224,7 +235,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // ================= STARTUP ANIMATION =================
         window.addEventListener('load', () => {
@@ -247,11 +258,14 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
         let liveListener = null;
+        let currentUserId = ""; 
 
         // ================= QR CODES INIT =================
-        let outQR = new QRCode(document.getElementById("out-qr"), { width: 100, height: 100, colorDark : "#000000", colorLight : "#ffffff" });
-        let vlessQR = new QRCode(document.getElementById("vless-qr"), { width: 100, height: 100, colorDark : "#000000", colorLight : "#ffffff" });
+        // QR Code တွေကို အစမ်း ဖန်တီးထားမည်
+        let outQR = new QRCode(document.getElementById("out-qr"), { width: 90, height: 90, colorDark : "#000000", colorLight : "#ffffff" });
+        let vlessQR = new QRCode(document.getElementById("vless-qr"), { width: 90, height: 90, colorDark : "#000000", colorLight : "#ffffff" });
 
         // Helper Function for Progress Bars
         function updateProgress(usedId, totalId, progressId, percentTextId, used, total) {
@@ -274,34 +288,31 @@
         // ================= COPY FUNCTION =================
         window.copyKey = function(elementId) {
             const inputElement = document.getElementById(elementId);
-            
-            // Temporary change type to text to allow copying on mobile devices easily
+            // Type က password ဖြစ်နေလို့ ခဏ text ပြောင်းပြီး copy ကူးမည် (Mobile တွင်အဆင်ပြေစေရန်)
             inputElement.type = 'text';
             inputElement.select();
-            inputElement.setSelectionRange(0, 99999); 
+            inputElement.setSelectionRange(0, 99999); // For mobile devices
             
             const valueToCopy = inputElement.value;
             if(!valueToCopy || valueToCopy.includes("No Key") || valueToCopy.includes("Loading")) {
                 inputElement.type = 'password';
-                return alert("⚠️ There is no valid key to copy. Please contact Admin.");
+                return alert("⚠️ There is no valid key to copy.");
             }
 
             navigator.clipboard.writeText(valueToCopy).then(() => {
                 const btn = event.currentTarget;
                 const originalHtml = btn.innerHTML;
-                const originalClass = btn.className;
-
-                // Visual Feedback
                 btn.innerHTML = '<i class="fa-solid fa-check"></i> COPIED!';
-                btn.className = "w-full bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2";
+                btn.classList.add('bg-emerald-600', 'text-white');
+                btn.classList.remove('text-indigo-400', 'text-cyan-400', 'bg-indigo-500/10', 'bg-cyan-500/10');
                 
                 setTimeout(() => {
                     btn.innerHTML = originalHtml;
-                    btn.className = originalClass;
+                    btn.className = originalHtml.includes('LINK') ? 
+                        "mt-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-md" : 
+                        "mt-2 w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg text-xs font-bold transition-all shadow-md";
                 }, 2000);
-                
-                // Hide it back
-                inputElement.type = 'password'; 
+                inputElement.type = 'password'; // ပြန်ဝှက်မည်
             }).catch(err => {
                 console.error('Failed to copy: ', err);
                 alert("Failed to copy automatically.");
@@ -327,24 +338,26 @@
             
             liveListener = onSnapshot(userRef, (docSnap) => {
                 if (docSnap.exists()) {
+                    currentUserId = username;
                     const data = docSnap.data();
                     
-                    // Profile Name (Read Only - no edit functionality here)
+                    // Profile Name
                     const showName = data.displayName || username;
                     document.getElementById('display-name').innerText = showName;
+                    document.getElementById('new-name-input').value = showName;
                     
                     // Update Outline Data & QR
                     updateProgress('out-used-show', 'out-total-show', 'out-progress', 'out-percent-text', data.outlineUsedGB || 0, data.outlineTotalGB || 0);
                     document.getElementById('out-expire-show').innerText = data.outlineExpireDate || "No Date";
-                    const oKey = data.outlineKey || "";
-                    document.getElementById('out-key-hidden').value = oKey ? oKey : "No Key Assigned";
+                    const oKey = data.outlineKey || "No Key Assigned";
+                    document.getElementById('out-key-hidden').value = oKey;
                     if(data.outlineKey) { outQR.makeCode(data.outlineKey); } else { outQR.clear(); }
 
                     // Update VLESS Data & QR
                     updateProgress('vless-used-show', 'vless-total-show', 'vless-progress', 'vless-percent-text', data.vlessUsedGB || 0, data.vlessTotalGB || 0);
                     document.getElementById('vless-expire-show').innerText = data.vlessExpireDate || "No Date";
-                    const vKey = data.vlessKey || "";
-                    document.getElementById('vless-key-hidden').value = vKey ? vKey : "No Link Assigned";
+                    const vKey = data.vlessKey || "No Link Assigned";
+                    document.getElementById('vless-key-hidden').value = vKey;
                     if(data.vlessKey) { vlessQR.makeCode(data.vlessKey); } else { vlessQR.clear(); }
 
                     // Transition UI
@@ -364,17 +377,38 @@
             });
         });
 
+        // ================= CHANGE NAME =================
+        const nameContainer = document.getElementById('name-display-container');
+        const editContainer = document.getElementById('name-edit-container');
+
+        document.getElementById('btn-edit-trigger').addEventListener('click', () => {
+            nameContainer.classList.add('hidden'); editContainer.classList.remove('hidden'); document.getElementById('new-name-input').focus();
+        });
+        document.getElementById('btn-cancel-name').addEventListener('click', () => {
+            editContainer.classList.add('hidden'); nameContainer.classList.remove('hidden');
+        });
+
+        document.getElementById('btn-save-name').addEventListener('click', async () => {
+            const newName = document.getElementById('new-name-input').value.trim();
+            const btn = document.getElementById('btn-save-name');
+            if(newName && currentUserId) {
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin w-4"></i>';
+                try {
+                    await setDoc(doc(db, "users", currentUserId), { displayName: newName }, { merge: true });
+                    editContainer.classList.add('hidden'); nameContainer.classList.remove('hidden');
+                } catch (error) { console.error("Error updating name:", error); }
+                btn.innerHTML = '<i class="fa-solid fa-check w-4"></i>';
+            }
+        });
+
         // ================= LOGOUT =================
         document.getElementById('btn-logout').addEventListener('click', () => {
             if(liveListener) liveListener(); 
+            currentUserId = "";
             document.getElementById('login-section').classList.remove('hidden');
             document.getElementById('dashboard-section').classList.add('hidden');
             document.getElementById('username-input').value = "";
             document.getElementById('btn-login').innerHTML = '<span>AUTHORIZE ACCESS</span> <i class="fa-solid fa-arrow-right ml-2"></i>';
-            
-            // Reset Progress Bars for next login
-            document.getElementById('out-progress').style.width = '0%';
-            document.getElementById('vless-progress').style.width = '0%';
         });
     </script>
 </body>

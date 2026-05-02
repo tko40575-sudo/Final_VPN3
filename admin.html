@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VVIP - YLT | Admin Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { 
+            background-color: #050505; 
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050505 70%);
+            color: white; 
+            font-family: 'Outfit', sans-serif; 
+            min-height: 100vh;
+        }
+        .glass-panel { 
+            background: rgba(20, 20, 25, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(20px); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .glow-text-red { text-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 10px; }
+
+        /* Initial Loading Animation */
+        #startup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; z-index: 50;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        .loader-bar { width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 1rem; }
+        .loader-progress { height: 100%; background: #ef4444; width: 0%; box-shadow: 0 0 10px #ef4444; animation: load 1.5s ease-in-out forwards; }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+        .expandable-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out; opacity: 0; }
+        .expandable-content.open { max-height: 500px; opacity: 1; }
+        .chevron { transition: transform 0.3s ease; }
+        .chevron.open { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="p-4 md:p-10 flex justify-center min-h-screen relative overflow-x-hidden">
+
+    <!-- Startup Animation -->
+    <div id="startup-overlay">
+        <div class="text-center flex flex-col items-center">
+            <i class="fa-solid fa-shield-halved text-5xl text-red-500 mb-4 animate-pulse" style="filter: drop-shadow(0 0 15px rgba(239,68,68,0.5));"></i>
+            <h2 class="text-2xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">INITIALIZING SYSTEM</h2>
+            <div class="loader-bar"><div class="loader-progress"></div></div>
+            <p id="loading-text" class="text-xs text-red-500/70 mt-2 font-mono uppercase tracking-widest">Establishing secure connection...</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="w-full max-w-4xl flex flex-col space-y-6 opacity-0 transition-opacity duration-1000 transform translate-y-4">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row items-center justify-between mb-2 mt-4 glass-panel p-6 rounded-3xl border-l-4 border-red-500 relative overflow-hidden">
+            <div class="absolute -left-20 -top-20 w-40 h-40 bg-red-600/20 rounded-full blur-3xl"></div>
+            <div class="flex items-center gap-4 z-10">
+                <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-orange-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                    <i class="fa-solid fa-user-shield text-2xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-300 tracking-tight">VVIP - YLT</h1>
+                    <p class="text-sm text-gray-400 uppercase tracking-widest">Admin Control Center</p>
+                </div>
+            </div>
+            <div class="mt-4 md:mt-0 z-10 flex items-center gap-2 bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/20">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span class="text-xs font-bold text-red-400 tracking-wider">SYSTEM ONLINE</span>
+            </div>
+        </div>
+
+        <!-- Security Settings (Collapsible) -->
+        <div class="glass-panel rounded-3xl overflow-hidden border border-red-900/30">
+            <button id="security-trigger" class="w-full p-6 flex justify-between items-center bg-gradient-to-r from-red-900/20 to-transparent hover:bg-red-900/40 transition-colors group">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-lock text-red-400 group-hover:text-red-300 transition-colors"></i>
+                    <h2 class="text-lg font-bold text-gray-200 tracking-wide">Security & Auto-Sync Settings</h2>
+                </div>
+                <i id="security-chevron" class="fa-solid fa-chevron-down text-gray-500 chevron"></i>
+            </button>
+            <div id="security-content" class="expandable-content bg-black/20">
+                <div class="p-6 pt-2">
+                    <p class="text-xs text-red-400 mb-4 bg-red-500/10 inline-block px-3 py-1 rounded-lg border border-red-500/20">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Authorized Personnel Only. These credentials power the Python Auto-Sync.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Outline API URL</label>
+                            <input type="text" id="cfg-outline" placeholder="https://..." class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all">
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">X-UI (VLESS) Panel URL</label>
+                            <input type="text" id="cfg-xui-url" placeholder="http://123.45.67.89:54321" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all">
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">X-UI Admin Username</label>
+                            <input type="text" id="cfg-xui-user" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all">
+                        </div>
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                            <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">X-UI Admin Password</label>
+                            <input type="password" id="cfg-xui-pass" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center gap-4">
+                        <button id="btn-save-cfg" class="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold py-3 px-6 rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-server"></i> SAVE CREDENTIALS
+                        </button>
+                        <p id="cfg-msg" class="text-sm text-emerald-400 hidden bg-emerald-500/10 px-3 py-2 rounded-lg border border-emerald-500/20"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: User Search -->
+        <div class="glass-panel p-6 rounded-3xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-600/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+            <h2 class="text-lg font-bold mb-4 text-gray-200 tracking-wide border-b border-gray-800 pb-2"><i class="fa-solid fa-magnifying-glass text-indigo-400 mr-2"></i> 1. Locate User Account</h2>
+            
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-at absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                    <input type="text" id="admin-username" placeholder="Enter Login ID (e.g. FREE5)" class="w-full bg-black/40 border border-gray-700/50 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-600">
+                </div>
+                <button id="btn-fetch" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 px-8 rounded-2xl shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-all flex items-center justify-center gap-2">
+                    FETCH DATA <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <p id="status-msg" class="mt-4 text-sm hidden"></p>
+        </div>
+
+        <!-- Step 2: User Editor -->
+        <div id="editor-section" class="glass-panel p-6 rounded-3xl hidden opacity-0 transition-opacity duration-700 relative overflow-hidden">
+            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-emerald-600/10 rounded-full blur-3xl"></div>
+            <h2 class="text-lg font-bold mb-6 text-gray-200 tracking-wide border-b border-gray-800 pb-2 z-10 relative"><i class="fa-solid fa-sliders text-emerald-400 mr-2"></i> 2. Modify Allocation & Links</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 z-10 relative">
+                
+                <!-- Outline Editor -->
+                <div class="space-y-4 bg-black/30 p-5 rounded-2xl border border-indigo-500/20 relative group">
+                    <div class="absolute inset-0 border border-indigo-500/0 group-hover:border-indigo-500/50 rounded-2xl transition-colors pointer-events-none"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+                        <h3 class="font-bold text-indigo-300">Outline Config</h3>
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Outline Access Key (ss://...)</label>
+                        <input type="text" id="out-key" placeholder="Paste Outline Access Key here" class="w-full bg-black/50 border border-indigo-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-400 transition-all text-sm font-mono text-indigo-200">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Total GB Allowed</label>
+                        <input type="number" id="out-total" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block flex justify-between">Used GB <span class="text-emerald-500/70 text-[10px]">(Auto-Synced)</span></label>
+                        <input type="number" step="0.01" id="out-used" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all text-gray-400" readonly title="Updated by Python Script">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Expire Date</label>
+                        <input type="date" id="out-expire" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all" style="color-scheme: dark;">
+                    </div>
+                </div>
+
+                <!-- VLESS Editor -->
+                <div class="space-y-4 bg-black/30 p-5 rounded-2xl border border-cyan-500/20 relative group">
+                    <div class="absolute inset-0 border border-cyan-500/0 group-hover:border-cyan-500/50 rounded-2xl transition-colors pointer-events-none"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-network-wired text-cyan-400"></i>
+                        <h3 class="font-bold text-cyan-300">VLESS Config</h3>
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">VLESS / VMess Link (vless://...)</label>
+                        <input type="text" id="vless-key" placeholder="Paste VLESS Link here" class="w-full bg-black/50 border border-cyan-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-400 transition-all text-sm font-mono text-cyan-200">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Total GB Allowed</label>
+                        <input type="number" id="vless-total" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block flex justify-between">Used GB <span class="text-emerald-500/70 text-[10px]">(Auto-Synced)</span></label>
+                        <input type="number" step="0.01" id="vless-used" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-all text-gray-400" readonly title="Updated by Python Script">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase tracking-widest mb-1 block">Expire Date</label>
+                        <input type="date" id="vless-expire" class="w-full bg-black/50 border border-gray-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all" style="color-scheme: dark;">
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-save" class="w-full mt-8 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_-10px_rgba(16,185,129,0.6)] transition-all flex items-center justify-center gap-2 relative z-10 text-lg">
+                <i class="fa-solid fa-cloud-arrow-up"></i> COMMIT CHANGES TO DATABASE
+            </button>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ================= STARTUP ANIMATION =================
+        window.addEventListener('load', () => {
+            const loadingText = document.getElementById('loading-text');
+            const texts = ["Decrypting payload...", "Verifying admin access...", "Loading modules...", "System Ready."];
+            let i = 0;
+            const textInterval = setInterval(() => {
+                if(i < texts.length) { loadingText.innerText = texts[i]; i++; }
+            }, 300);
+
+            setTimeout(() => {
+                clearInterval(textInterval);
+                const overlay = document.getElementById('startup-overlay');
+                const mainContent = document.getElementById('main-content');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.visibility = 'hidden';
+                    mainContent.classList.remove('opacity-0', 'translate-y-4');
+                }, 800);
+            }, 1800); 
+        });
+
+        // ================= ACCORDION LOGIC =================
+        const secTrigger = document.getElementById('security-trigger');
+        const secContent = document.getElementById('security-content');
+        const secChevron = document.getElementById('security-chevron');
+        secTrigger.addEventListener('click', () => {
+            secContent.classList.toggle('open');
+            secChevron.classList.toggle('open');
+        });
+
+        // ================= FIREBASE INIT =================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiibkAoIbkTAfZRILSfx3qA2SjNFEdB5U",
+            authDomain: "vpn-pane.firebaseapp.com",
+            projectId: "vpn-pane",
+            storageBucket: "vpn-pane.firebasestorage.app",
+            messagingSenderId: "1094380249696",
+            appId: "1:1094380249696:web:d94f63c4f7170654415905"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ================= LOAD SERVER CONFIGS =================
+        async function loadConfigs() {
+            const cfgRef = doc(db, "admin_config", "server_api");
+            const snap = await getDoc(cfgRef);
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('cfg-outline').value = d.outline_url || "";
+                document.getElementById('cfg-xui-url').value = d.xui_url || "";
+                document.getElementById('cfg-xui-user').value = d.xui_user || "";
+                document.getElementById('cfg-xui-pass').value = d.xui_pass || "";
+            }
+        }
+        loadConfigs();
+
+        document.getElementById('btn-save-cfg').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-save-cfg');
+            const msg = document.getElementById('cfg-msg');
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> SECURING...';
+            const cfgData = {
+                outline_url: document.getElementById('cfg-outline').value.trim(),
+                xui_url: document.getElementById('cfg-xui-url').value.trim(),
+                xui_user: document.getElementById('cfg-xui-user').value.trim(),
+                xui_pass: document.getElementById('cfg-xui-pass').value.trim()
+            };
+            await setDoc(doc(db, "admin_config", "server_api"), cfgData, { merge: true });
+            btn.innerHTML = '<i class="fa-solid fa-server"></i> SAVE CREDENTIALS';
+            msg.innerHTML = '<i class="fa-solid fa-check"></i> Secured';
+            msg.classList.remove('hidden');
+            setTimeout(() => msg.classList.add('hidden'), 3000);
+        });
+
+        // ================= FETCH USER =================
+        document.getElementById('btn-fetch').addEventListener('click', async () => {
+            const username = document.getElementById('admin-username').value.trim();
+            const statusMsg = document.getElementById('status-msg');
+            const editor = document.getElementById('editor-section');
+            if(!username) return;
+            
+            statusMsg.classList.remove('hidden');
+            statusMsg.className = "mt-4 text-sm bg-indigo-500/10 text-indigo-400 px-4 py-2 rounded-lg border border-indigo-500/20 inline-block";
+            statusMsg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Querying database...';
+            editor.classList.add('hidden');
+            editor.classList.add('opacity-0');
+
+            const userRef = doc(db, "users", username);
+            const docSnap = await getDoc(userRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const displayName = data.displayName ? ` <span class="text-white font-bold px-2 py-1 bg-white/10 rounded ml-2">(Nickname: ${data.displayName})</span>` : '';
+                
+                statusMsg.innerHTML = `<i class="fa-solid fa-check mr-2"></i> User Found: <b>${username}</b>${displayName}`;
+                statusMsg.className = "mt-4 text-sm bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-lg border border-emerald-500/20 inline-block";
+                
+                document.getElementById('out-key').value = data.outlineKey || "";
+                document.getElementById('out-total').value = data.outlineTotalGB || 0;
+                document.getElementById('out-used').value = data.outlineUsedGB || 0;
+                document.getElementById('out-expire').value = data.outlineExpireDate || "";
+
+                document.getElementById('vless-key').value = data.vlessKey || "";
+                document.getElementById('vless-total').value = data.vlessTotalGB || 0;
+                document.getElementById('vless-used').value = data.vlessUsedGB || 0;
+                document.getElementById('vless-expire').value = data.vlessExpireDate || "";
+
+                editor.classList.remove('hidden');
+                setTimeout(() => editor.classList.remove('opacity-0'), 50);
+            } else {
+                statusMsg.innerHTML = '<i class="fa-solid fa-user-plus mr-2"></i> New User Profile Created. Enter initial data.';
+                statusMsg.className = "mt-4 text-sm bg-orange-500/10 text-orange-400 px-4 py-2 rounded-lg border border-orange-500/20 inline-block";
+                
+                document.querySelectorAll('#editor-section input').forEach(inp => inp.value = "");
+                editor.classList.remove('hidden');
+                setTimeout(() => editor.classList.remove('opacity-0'), 50);
+            }
+        });
+
+        // ================= SAVE USER =================
+        document.getElementById('btn-save').addEventListener('click', async () => {
+            const username = document.getElementById('admin-username').value.trim();
+            const btn = document.getElementById('btn-save');
+            if(!username) return alert("Please fetch a user first.");
+
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> COMMITTING...';
+
+            const newData = {
+                outlineKey: document.getElementById('out-key').value.trim(),
+                outlineTotalGB: Number(document.getElementById('out-total').value) || 0,
+                outlineExpireDate: document.getElementById('out-expire').value || "",
+                
+                vlessKey: document.getElementById('vless-key').value.trim(),
+                vlessTotalGB: Number(document.getElementById('vless-total').value) || 0,
+                vlessExpireDate: document.getElementById('vless-expire').value || ""
+            };
+
+            try {
+                await setDoc(doc(db, "users", username), newData, { merge: true });
+                btn.innerHTML = '<i class="fa-solid fa-check-double"></i> UPDATE SUCCESSFUL';
+                btn.classList.replace('from-emerald-600', 'from-indigo-600');
+                btn.classList.replace('to-teal-600', 'to-blue-600');
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> COMMIT CHANGES TO DATABASE';
+                    btn.classList.replace('from-indigo-600', 'from-emerald-600');
+                    btn.classList.replace('to-blue-600', 'to-teal-600');
+                }, 2500);
+            } catch (error) {
+                console.error("Error: ", error);
+                alert("Failed to update user.");
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> COMMIT CHANGES TO DATABASE';
+            }
+        });
+    </script>
+</body>
+</html>
