@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VVIP - YLT | Client Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { 
+            background-color: #050505; 
+            background-image: radial-gradient(circle at 50% 0%, #1a1a2e 0%, #050505 70%);
+            color: white; 
+            font-family: 'Outfit', sans-serif; 
+            min-height: 100vh;
+        }
+        .glass-panel { 
+            background: rgba(20, 20, 25, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(20px); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .data-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .data-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7); }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #3730a3; border-radius: 10px; }
+
+        /* QR Code Styling */
+        .qr-wrapper { background: white; padding: 8px; border-radius: 12px; display: inline-block; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .qr-wrapper img { margin: 0 auto; border-radius: 8px; }
+
+        /* Startup Loading Animation */
+        #startup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; z-index: 50;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        .loader-ring { width: 80px; height: 80px; border-radius: 50%; border: 3px solid transparent; border-top-color: #6366f1; border-right-color: #22d3ee; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Staggered Animations */
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s ease-out forwards; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .progress-bar { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="p-4 md:p-10 flex justify-center items-center overflow-x-hidden relative">
+
+    <div id="startup-overlay">
+        <div class="loader-ring mb-6 shadow-[0_0_30px_rgba(99,102,241,0.5)] rounded-full"></div>
+        <h2 class="text-xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">VVIP ACCESS</h2>
+        <p class="text-xs text-gray-500 mt-2 tracking-widest uppercase">Securing connection...</p>
+    </div>
+
+    <div class="w-full max-w-4xl flex flex-col space-y-6 opacity-0 transition-opacity duration-1000" id="main-wrapper">
+
+        <!-- ================= LOGIN SECTION ================= -->
+        <div id="login-section" class="glass-panel p-10 rounded-[2rem] text-center transform transition-all duration-500 fade-in-up max-w-xl mx-auto w-full">
+            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-400 rounded-full mx-auto mb-6 flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.5)] relative overflow-hidden group">
+                <i class="fa-solid fa-bolt text-3xl text-white relative z-10"></i>
+            </div>
+            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-300 mb-2 tracking-tight">VVIP - YLT</h1>
+            <p class="text-gray-400 mb-8 text-sm uppercase tracking-widest">Client Portal</p>
+            
+            <div class="relative mb-6">
+                <i class="fa-solid fa-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                <input type="text" id="username-input" placeholder="Enter Login ID (e.g. FREE5)" class="w-full bg-black/40 border border-gray-700/50 rounded-2xl pl-12 pr-4 py-4 text-lg text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-gray-600 text-center tracking-wider">
+            </div>
+            
+            <button id="btn-login" class="w-full bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold py-4 rounded-2xl shadow-[0_10px_20px_-10px_rgba(99,102,241,0.6)] transition-all flex items-center justify-center group">
+                <span>AUTHORIZE ACCESS</span>
+                <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <p id="login-error" class="text-red-400 mt-4 text-sm hidden bg-red-500/10 py-2 rounded-lg border border-red-500/20"></p>
+        </div>
+
+        <!-- ================= DASHBOARD SECTION (READ ONLY) ================= -->
+        <div id="dashboard-section" class="hidden space-y-6">
+            
+            <!-- Header (NO EDIT BUTTON HERE) -->
+            <div class="glass-panel p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 relative overflow-hidden fade-in-up">
+                <div class="absolute -right-20 -top-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl"></div>
+                
+                <div class="flex items-center gap-4 z-10 w-full md:w-auto">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)] border-2 border-white/10">
+                        <i class="fa-solid fa-user text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Premium Client</p>
+                        <h2 id="display-name" class="text-2xl font-bold text-white text-shadow-sm">User</h2>
+                    </div>
+                </div>
+
+                <button id="btn-logout" class="z-10 w-full md:w-auto bg-gradient-to-r from-red-900/40 to-red-800/20 hover:from-red-600 hover:to-red-500 text-red-200 hover:text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all border border-red-500/30 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-power-off"></i> DISCONNECT
+                </button>
+            </div>
+
+            <!-- Stats & Keys Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Outline Card -->
+                <div class="glass-panel p-6 rounded-3xl data-card relative overflow-hidden group fade-in-up delay-100 flex flex-col">
+                    <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-center mb-6 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/30 shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-200 tracking-wide">Outline Access</h3>
+                        </div>
+                        <span class="flex h-3 w-3 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+                        </span>
+                    </div>
+                    
+                    <div class="flex-1 space-y-4 relative z-10 flex flex-col justify-between">
+                        <!-- Usage with Progress Bar -->
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest flex justify-between">
+                                <span>Data Usage</span>
+                                <span id="out-percent-text" class="text-indigo-400 font-bold">0%</span>
+                            </p>
+                            <div class="flex items-end gap-2 mb-3">
+                                <p class="text-3xl font-extrabold text-white" style="text-shadow: 0 0 20px rgba(99,102,241,0.6);" id="out-used-show">0</p>
+                                <p class="text-sm text-gray-500 font-medium mb-1">/ <span id="out-total-show">0</span> GB</p>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-1.5 border border-gray-700/50">
+                                <div id="out-progress" class="bg-gradient-to-r from-indigo-600 to-cyan-400 h-1.5 rounded-full progress-bar shadow-[0_0_10px_rgba(99,102,241,0.8)]" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 flex justify-between items-center">
+                            <div><p class="text-xs text-gray-400 mb-1 uppercase tracking-widest">Expire Date</p><p class="text-lg font-bold text-gray-200" id="out-expire-show">N/A</p></div>
+                            <i class="fa-regular fa-calendar text-indigo-500/50 text-2xl"></i>
+                        </div>
+
+                        <!-- Copy & QR Section -->
+                        <div class="bg-indigo-900/20 p-4 rounded-2xl border border-indigo-500/30 flex items-center justify-between mt-auto">
+                            <div class="flex-1 mr-4">
+                                <p class="text-xs text-indigo-300 mb-2 font-bold uppercase tracking-widest">Access Key</p>
+                                <!-- Readonly input -->
+                                <input type="password" id="out-key-hidden" class="w-full bg-black/50 border border-indigo-500/50 rounded-lg px-2 py-2 text-xs text-indigo-100 mb-3" readonly value="Loading...">
+                                <button onclick="copyKey('out-key-hidden')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(99,102,241,0.6)] flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-copy"></i> COPY KEY
+                                </button>
+                            </div>
+                            <!-- QR Code will generate here -->
+                            <div id="out-qr" class="qr-wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VLESS Card -->
+                <div class="glass-panel p-6 rounded-3xl data-card relative overflow-hidden group fade-in-up delay-200 flex flex-col">
+                    <div class="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex justify-between items-center mb-6 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400 border border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                                <i class="fa-solid fa-network-wired"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-200 tracking-wide">VLESS (VMess) Access</h3>
+                        </div>
+                        <span class="flex h-3 w-3 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+                        </span>
+                    </div>
+                    
+                    <div class="flex-1 space-y-4 relative z-10 flex flex-col justify-between">
+                        <!-- Usage with Progress Bar -->
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden">
+                            <p class="text-xs text-gray-400 mb-1 uppercase tracking-widest flex justify-between">
+                                <span>Data Usage</span>
+                                <span id="vless-percent-text" class="text-cyan-400 font-bold">0%</span>
+                            </p>
+                            <div class="flex items-end gap-2 mb-3">
+                                <p class="text-3xl font-extrabold text-white" style="text-shadow: 0 0 20px rgba(34,211,238,0.6);" id="vless-used-show">0</p>
+                                <p class="text-sm text-gray-500 font-medium mb-1">/ <span id="vless-total-show">0</span> GB</p>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-1.5 border border-gray-700/50">
+                                <div id="vless-progress" class="bg-gradient-to-r from-cyan-500 to-teal-400 h-1.5 rounded-full progress-bar shadow-[0_0_10px_rgba(34,211,238,0.8)]" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/40 p-4 rounded-2xl border border-white/5 flex justify-between items-center">
+                            <div><p class="text-xs text-gray-400 mb-1 uppercase tracking-widest">Expire Date</p><p class="text-lg font-bold text-gray-200" id="vless-expire-show">N/A</p></div>
+                            <i class="fa-regular fa-clock text-cyan-500/50 text-2xl"></i>
+                        </div>
+
+                        <!-- Copy & QR Section -->
+                        <div class="bg-cyan-900/20 p-4 rounded-2xl border border-cyan-500/30 flex items-center justify-between mt-auto">
+                            <div class="flex-1 mr-4">
+                                <p class="text-xs text-cyan-300 mb-2 font-bold uppercase tracking-widest">Server Link</p>
+                                <!-- Readonly input -->
+                                <input type="password" id="vless-key-hidden" class="w-full bg-black/50 border border-cyan-500/50 rounded-lg px-2 py-2 text-xs text-cyan-100 mb-3" readonly value="Loading...">
+                                <button onclick="copyKey('vless-key-hidden')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_5px_15px_-5px_rgba(34,211,238,0.6)] flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-copy"></i> COPY LINK
+                                </button>
+                            </div>
+                            <!-- QR Code will generate here -->
+                            <div id="vless-qr" class="qr-wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // ================= STARTUP ANIMATION =================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('startup-overlay');
+                const mainWrapper = document.getElementById('main-wrapper');
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.visibility = 'hidden'; mainWrapper.classList.remove('opacity-0'); }, 800);
+            }, 1200); 
+        });
+
+        // ================= FIREBASE INIT =================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiibkAoIbkTAfZRILSfx3qA2SjNFEdB5U",
+            authDomain: "vpn-pane.firebaseapp.com",
+            projectId: "vpn-pane",
+            storageBucket: "vpn-pane.firebasestorage.app",
+            messagingSenderId: "1094380249696",
+            appId: "1:1094380249696:web:d94f63c4f7170654415905"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let liveListener = null;
+
+        // ================= QR CODES INIT =================
+        let outQR = new QRCode(document.getElementById("out-qr"), { width: 100, height: 100, colorDark : "#000000", colorLight : "#ffffff" });
+        let vlessQR = new QRCode(document.getElementById("vless-qr"), { width: 100, height: 100, colorDark : "#000000", colorLight : "#ffffff" });
+
+        // Helper Function for Progress Bars
+        function updateProgress(usedId, totalId, progressId, percentTextId, used, total) {
+            document.getElementById(usedId).innerText = used;
+            document.getElementById(totalId).innerText = total;
+            let percent = total > 0 ? Math.min((used / total) * 100, 100) : 0;
+            setTimeout(() => {
+                document.getElementById(progressId).style.width = `${percent}%`;
+                document.getElementById(percentTextId).innerText = `${Math.round(percent)}%`;
+                if(percent > 90) {
+                    document.getElementById(progressId).classList.replace('from-indigo-600', 'from-red-500');
+                    document.getElementById(progressId).classList.replace('to-cyan-400', 'to-orange-500');
+                    document.getElementById(progressId).classList.replace('from-cyan-500', 'from-red-500');
+                    document.getElementById(progressId).classList.replace('to-teal-400', 'to-orange-500');
+                    document.getElementById(percentTextId).classList.add('text-red-400');
+                }
+            }, 300); 
+        }
+
+        // ================= COPY FUNCTION =================
+        window.copyKey = function(elementId) {
+            const inputElement = document.getElementById(elementId);
+            
+            // Temporary change type to text to allow copying on mobile devices easily
+            inputElement.type = 'text';
+            inputElement.select();
+            inputElement.setSelectionRange(0, 99999); 
+            
+            const valueToCopy = inputElement.value;
+            if(!valueToCopy || valueToCopy.includes("No Key") || valueToCopy.includes("Loading")) {
+                inputElement.type = 'password';
+                return alert("⚠️ There is no valid key to copy. Please contact Admin.");
+            }
+
+            navigator.clipboard.writeText(valueToCopy).then(() => {
+                const btn = event.currentTarget;
+                const originalHtml = btn.innerHTML;
+                const originalClass = btn.className;
+
+                // Visual Feedback
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> COPIED!';
+                btn.className = "w-full bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2";
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.className = originalClass;
+                }, 2000);
+                
+                // Hide it back
+                inputElement.type = 'password'; 
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert("Failed to copy automatically.");
+                inputElement.type = 'password';
+            });
+        };
+
+        // ================= LOGIN LOGIC =================
+        document.getElementById('btn-login').addEventListener('click', () => {
+            const username = document.getElementById('username-input').value.trim();
+            const errorMsg = document.getElementById('login-error');
+            const loginBtn = document.getElementById('btn-login');
+            
+            if(!username) {
+                errorMsg.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1"></i> Please enter your Login ID.';
+                errorMsg.classList.remove('hidden'); return;
+            }
+
+            loginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span class="ml-2">AUTHENTICATING...</span>';
+            errorMsg.classList.add('hidden');
+
+            const userRef = doc(db, "users", username);
+            
+            liveListener = onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // Profile Name (Read Only - no edit functionality here)
+                    const showName = data.displayName || username;
+                    document.getElementById('display-name').innerText = showName;
+                    
+                    // Update Outline Data & QR
+                    updateProgress('out-used-show', 'out-total-show', 'out-progress', 'out-percent-text', data.outlineUsedGB || 0, data.outlineTotalGB || 0);
+                    document.getElementById('out-expire-show').innerText = data.outlineExpireDate || "No Date";
+                    const oKey = data.outlineKey || "";
+                    document.getElementById('out-key-hidden').value = oKey ? oKey : "No Key Assigned";
+                    if(data.outlineKey) { outQR.makeCode(data.outlineKey); } else { outQR.clear(); }
+
+                    // Update VLESS Data & QR
+                    updateProgress('vless-used-show', 'vless-total-show', 'vless-progress', 'vless-percent-text', data.vlessUsedGB || 0, data.vlessTotalGB || 0);
+                    document.getElementById('vless-expire-show').innerText = data.vlessExpireDate || "No Date";
+                    const vKey = data.vlessKey || "";
+                    document.getElementById('vless-key-hidden').value = vKey ? vKey : "No Link Assigned";
+                    if(data.vlessKey) { vlessQR.makeCode(data.vlessKey); } else { vlessQR.clear(); }
+
+                    // Transition UI
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('dashboard-section').classList.remove('hidden');
+
+                } else {
+                    loginBtn.innerHTML = '<span>AUTHORIZE ACCESS</span> <i class="fa-solid fa-arrow-right ml-2"></i>';
+                    errorMsg.innerHTML = '❌ Access Denied! Invalid Login ID.';
+                    errorMsg.classList.remove('hidden');
+                    if(liveListener) liveListener(); 
+                }
+            }, (error) => {
+                loginBtn.innerHTML = '<span>AUTHORIZE ACCESS</span> <i class="fa-solid fa-arrow-right ml-2"></i>';
+                errorMsg.innerText = "Connection error. Try again.";
+                errorMsg.classList.remove('hidden');
+            });
+        });
+
+        // ================= LOGOUT =================
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            if(liveListener) liveListener(); 
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('username-input').value = "";
+            document.getElementById('btn-login').innerHTML = '<span>AUTHORIZE ACCESS</span> <i class="fa-solid fa-arrow-right ml-2"></i>';
+            
+            // Reset Progress Bars for next login
+            document.getElementById('out-progress').style.width = '0%';
+            document.getElementById('vless-progress').style.width = '0%';
+        });
+    </script>
+</body>
+</html>
