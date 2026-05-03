@@ -11,13 +11,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ==========================================
 # Firebase ချိတ်ဆက်ခြင်း
 # ==========================================
-# သတိပြုရန်: 'serviceAccountKey.json' သည် သင်၏ Firebase Admin SDK Key ဖြစ်ရမည်။
 cred = credentials.Certificate("serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def get_server_configs():
-    """Admin Panel မှ လုံခြုံစွာထည့်ထားသော Server Credentials များကို လှမ်းယူခြင်း"""
+    """Admin Panel မှ ထည့်ထားသော Server Credentials များကို လှမ်းယူခြင်း"""
     try:
         doc = db.collection("admin_config").document("server_api").get()
         if doc.exists:
@@ -42,7 +41,7 @@ def get_xui_usage(xui_url, xui_user, xui_pass):
         login_res = session.post(f"{xui_url}/login", data={'username': xui_user, 'password': xui_pass}, timeout=10)
         
         if login_res.status_code != 200:
-            print("[-] X-UI Login Failed! Check Password in Admin Panel.")
+            print("[-] X-UI Login Failed! Check Password.")
             return {}
         
         res = session.get(f"{xui_url}/xui/API/inbounds", timeout=10)
